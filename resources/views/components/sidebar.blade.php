@@ -130,13 +130,11 @@
                     {{ Auth::user()->email }}
                 </span>
             </div>
-
-            </br></br>
-
+            <!--- boton descarga
             <a href="https://tailadmin.com/pricing" target="_blank" rel="nofollow"
                 class="flex items-center justify-center rounded-lg bg-brand-500 p-3 text-theme-sm font-medium text-white hover:bg-brand-600">
                 Descargar Datos
-            </a>
+            </a>--->
         </div>
         <!-- Promo Box -->
     </div>

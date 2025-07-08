@@ -1,9 +1,10 @@
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 @props(['sensores'])
 
-<div class="col-span-12">
+<div class="col-span-12 ">
+
     <div
-        class="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
+        class="rounded-2xl border border-gray-200  px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
 
         <div class="flex flex-wrap items-start justify-between gap-5">
             <div class="flex gap-2">
@@ -425,4 +426,79 @@
                 </div>
             </div>
 
+            <!----optimo-aceptable-critico-->
+            <div class="col-span-12 mt-4">
+                <!-- Metric Group Five -->
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-3 pb-4">
+                    <!-- Metric Item Start -->
+                    <div
+                        class="rounded-xl flex justify-start items-center border border-gray-200 bg-blue-50 px-6 pb-1 pt-1 dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div class="flex flex-col justify-start items-center gap-3">
+                            <div>
+                                <span
+                                    class="flex  justify-center mb-1 items-center gap-2 text-theme-xs text-gray-500 dark:text-gray-400">
+                                    <span class="inline-block w-3 h-3 rounded-full" style="
+                                                            background-color:
+                                                  
+                                                                 #00a8e8 
+                                                       
+                                                               ">
+                                    </span>
+                                    Óptimo
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Metric Item End -->
+
+                    <!-- Metric Item Start -->
+                    <div
+                        class="rounded-xl flex justify-start items-center border border-gray-200 bg-blue-50 px-6 pb-1 pt-1 dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div class="flex flex-col justify-center items-center gap-3">
+                            <div>
+                                <span
+                                    class="flex  mb-1 items-center gap-2 text-theme-xs text-gray-500 dark:text-gray-400">
+                                    <span class="inline-block w-3 h-3 rounded-full" style="
+                                                            background-color:
+                                                           
+                                                                #f59e0b  ;
+                                                               ">
+                                    </span>
+                                    Aceptable
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Metric Item End -->
+
+                    <!-- Metric Item Start -->
+                    <div
+                        class="rounded-xl flex justify-start items-center border border-gray-200 bg-blue-50 px-6 pb-1 pt-1 dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div class="flex flex-col justify-center items-center gap-3">
+                            <div>
+                                <span
+                                    class="flex  mb-1 items-center gap-2 text-theme-xs text-gray-500 dark:text-gray-400">
+                                    <span class="inline-block w-3 h-3 rounded-full" style="
+                                                            background-color:
+
+                                                                #dc2626 
+                                                               ">
+                                    </span>
+                                    Crítico
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- Metric Item End -->
+
+
+                </div>
+                <!-- Metric Group Five -->
+
+            </div>
         </div>
+    </div>
+</div>
