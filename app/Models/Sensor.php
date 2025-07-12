@@ -20,4 +20,9 @@ class Sensor extends Model
     'area',
     ];
 
+    public function historial()
+{
+    return $this->hasMany(HistorialSensor::class);
+}
+
 }

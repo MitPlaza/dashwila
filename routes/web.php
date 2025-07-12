@@ -6,6 +6,7 @@ use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\SensorController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -31,9 +32,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+
+
 Route::get('/dashboard/form-registro', function () {
-    return view('dashboard.formulario');
-})->name('form.registro');
+        if (Auth::user()->rol !== 'admin') {
+            abort(403);
+        }
+        return view('dashboard.formulario');
+    })->name('form.registro');
+
+
 
 Route::post('/dashboard/users/store', [UserController::class, 'store'])->name('dashboard.user.store');
 
@@ -41,5 +49,7 @@ Route::get('/sensores', [SensorController::class, 'index'])->name('sensores.inde
 Route::get('sensores/edit/{sensor}', [SensorController::class, 'edit'])->name('sensores.edit');
 Route::put('sensores/edit/{sensor}', [SensorController::class, 'update'])->name('sensores.update');
 });
+
+
 
 require __DIR__.'/auth.php';

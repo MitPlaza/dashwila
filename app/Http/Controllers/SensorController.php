@@ -53,20 +53,31 @@ class SensorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, sensor $sensor)
-    {
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'bateria' => 'required|numeric|min:0|max:100',
-            'desgaste' => 'required|numeric|min:0|max:100',
-            'temperatura' => 'required|integer',
-            'estado' => 'required|in:activo,desactivado'
-        ]);
+   
 
-        $sensor->update($request->all());
+    public function update(Request $request, Sensor $sensor)
+{
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'bateria' => 'required|numeric|min:0|max:100',
+        'desgaste' => 'required|numeric|min:0|max:100',
+        'temperatura' => 'required|integer',
+        'estado' => 'required|in:activo,desactivado'
+    ]);
 
-        return redirect()->route('sensores.index')->with('success', 'Sensor actualizado correctamente.');
-    }
+    // 1. Guarda el histórico con los datos antes del cambio
+    $sensor->historial()->create([
+        'bateria' => $sensor->bateria,
+        'desgaste' => $sensor->desgaste,
+        'temperatura' => $sensor->temperatura,
+    ]);
+
+    // 2. Actualiza el sensor con los nuevos datos
+    $sensor->update($request->all());
+
+    return redirect()->route('sensores.index')->with('success', 'Sensor actualizado correctamente.');
+}
+
 
     /**
      * Remove the specified resource from storage.
