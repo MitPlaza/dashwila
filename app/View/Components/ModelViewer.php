@@ -8,17 +8,15 @@ use Illuminate\View\Component;
 
 class ModelViewer extends Component
 {
-    /**
-     * Create a new component instance.
-     */
-    public function __construct()
+    public $sensores;
+    public $datosHistoricos;
+
+    public function __construct($sensores, $datosHistoricos = [])
     {
-        //
+        $this->sensores = $sensores;
+        $this->datosHistoricos = $datosHistoricos;
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     */
     public function render(): View|Closure|string
     {
         return view('components.model-viewer');

@@ -1,5 +1,5 @@
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-@props(['sensores'])
+@props(['sensores', 'datosHistoricos'])
 
 <div class="col-span-12 ">
 
@@ -144,287 +144,599 @@
                     View in your space
                 </button>
             </model-viewer>
+
+
             <!---modal 1--->
             <div x-show="showModal1"
                 class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal1 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 5
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[4]->bateria }}%<br>
-                        Desgaste: {{ $sensores[4]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[4]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal1 = false">
-                        Cerrar
-                    </button>
+                <div class="bg-white rounded-lg w-full max-w-4xl mt-8 max-h-[80vh] overflow-y-auto dark:bg-gray-800"
+                    @click.away="showModal1 = false">
+
+                    <!-- Header -->
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <div class="flex items-center gap-4">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                                {{ $sensores[4]->nombre }}
+                            </h2>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                    @if($sensores[4]->desgaste < 20) bg-blue-100 text-blue-800 
+                    @elseif($sensores[4]->desgaste < 40) bg-orange-100 text-orange-800
+                    @else bg-red-100 text-red-800 @endif">
+                                @if($sensores[4]->desgaste < 20) Óptimo
+                                @elseif($sensores[4]->desgaste < 40) Aceptable
+                                @else Crítico @endif
+                            </span>
+                        </div>
+                        <button @click="showModal1 = false" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Métricas -->
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                            <!-- Temperatura -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Temperatura</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[4]->temperatura }}°C
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">
+                                    <span class="text-blue-600">Óptimo: 60-90°C</span> |
+                                    <span class="text-red-600">Crítico: >90°C</span>
+                                </div>
+                            </div>
+
+                            <!-- Desgaste -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Desgaste</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[4]->desgaste }}%
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">Límite: 50%</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full @if($sensores[4]->desgaste < 20) bg-blue-500 @elseif($sensores[4]->desgaste < 40) bg-orange-500 @else bg-red-500 @endif"
+                                        style="width: {{ $sensores[4]->desgaste }}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Batería -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Batería</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                                    {{ $sensores[4]->bateria }}%
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full"
+                                        style="width: {{ $sensores[4]->bateria }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Temperatura -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Temperatura
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoTemperaturaSensor5" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Desgaste -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Desgaste
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoDesgasteSensor5" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-6 pb-6">
+                        <button class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            @click="showModal1 = false">
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
+            <!---fin modal 1--->
+
+
+
+
             <!---modal 2--->
             <div x-show="showModal2"
                 class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal2 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 4
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[3]->bateria }}%<br>
-                        Desgaste: {{ $sensores[3]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[3]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal2 = false">
-                        Cerrar
-                    </button>
+                <div class="bg-white rounded-lg w-full max-w-4xl mt-8 max-h-[80vh] overflow-y-auto dark:bg-gray-800"
+                    @click.away="showModal2 = false">
+
+                    <!-- Header -->
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <div class="flex items-center gap-4">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                                {{ $sensores[3]->nombre }}
+                            </h2>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                    @if($sensores[3]->desgaste < 20) bg-blue-100 text-blue-800 
+                    @elseif($sensores[3]->desgaste < 40) bg-orange-100 text-orange-800
+                    @else bg-red-100 text-red-800 @endif">
+                                @if($sensores[3]->desgaste < 20) Óptimo
+                                @elseif($sensores[3]->desgaste < 40) Aceptable
+                                @else Crítico @endif
+                            </span>
+                        </div>
+                        <button @click="showModal2 = false" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Métricas -->
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                            <!-- Temperatura -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Temperatura</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[3]->temperatura }}°C
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">
+                                    <span class="text-blue-600">Óptimo: 60-90°C</span> |
+                                    <span class="text-red-600">Crítico: >90°C</span>
+                                </div>
+                            </div>
+
+                            <!-- Desgaste -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Desgaste</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[3]->desgaste }}%
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">Límite: 50%</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full @if($sensores[3]->desgaste < 20) bg-blue-500 @elseif($sensores[3]->desgaste < 40) bg-orange-500 @else bg-red-500 @endif"
+                                        style="width: {{ $sensores[3]->desgaste }}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Batería -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Batería</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                                    {{ $sensores[3]->bateria }}%
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full"
+                                        style="width: {{ $sensores[3]->bateria }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Temperatura -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Temperatura
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoTemperaturaSensor4" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Desgaste -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Desgaste
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoDesgasteSensor4" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-6 pb-6">
+                        <button class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            @click="showModal2 = false">
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
+            <!---fin modal 2--->
+
+
+
+
             <!---modal 3--->
-            <div x-show="showModal3"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal3 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 10
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[9]->bateria }}%<br>
-                        Desgaste: {{ $sensores[9]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[9]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal3 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-            <!---modal 4--->
-            <div x-show="showModal4"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal4 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 9
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[8]->bateria }}%<br>
-                        Desgaste: {{ $sensores[8]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[8]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal4 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-            <!---modal 5--->
-            <div x-show="showModal5"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal5 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 15
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[14]->bateria }}%<br>
-                        Desgaste: {{ $sensores[14]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[14]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal5 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-
-            <!---modal 6--->
-            <div x-show="showModal6"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal6 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 14
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[13]->bateria }}%<br>
-                        Desgaste: {{ $sensores[13]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[13]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal6 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-
-            <!---modal 7--->
             <div x-show="showModal7"
                 class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal7 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 3
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[2]->bateria }}%<br>
-                        Desgaste: {{ $sensores[2]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[2]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal7 = false">
-                        Cerrar
-                    </button>
+                <div class="bg-white rounded-lg w-full max-w-4xl mt-8 max-h-[80vh] overflow-y-auto dark:bg-gray-800"
+                    @click.away="showModal7 = false">
+
+                    <!-- Header -->
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <div class="flex items-center gap-4">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                                {{ $sensores[2]->nombre }}
+                            </h2>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                    @if($sensores[2]->desgaste < 20) bg-blue-100 text-blue-800 
+                    @elseif($sensores[2]->desgaste < 40) bg-orange-100 text-orange-800
+                    @else bg-red-100 text-red-800 @endif">
+                                @if($sensores[2]->desgaste < 20) Óptimo
+                                @elseif($sensores[2]->desgaste < 40) Aceptable
+                                @else Crítico @endif
+                            </span>
+                        </div>
+                        <button @click="showModal7 = false" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Métricas -->
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                            <!-- Temperatura -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Temperatura</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[2]->temperatura }}°C
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">
+                                    <span class="text-blue-600">Óptimo: 60-90°C</span> |
+                                    <span class="text-red-600">Crítico: >90°C</span>
+                                </div>
+                            </div>
+
+                            <!-- Desgaste -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Desgaste</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[2]->desgaste }}%
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">Límite: 50%</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full @if($sensores[2]->desgaste < 20) bg-blue-500 @elseif($sensores[2]->desgaste < 40) bg-orange-500 @else bg-red-500 @endif"
+                                        style="width: {{ $sensores[2]->desgaste }}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Batería -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Batería</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                                    {{ $sensores[2]->bateria }}%
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full"
+                                        style="width: {{ $sensores[2]->bateria }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Temperatura -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Temperatura
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoTemperaturaSensor3" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Desgaste -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Desgaste
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoDesgasteSensor3" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-6 pb-6">
+                        <button class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            @click="showModal7 = false">
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
+            <!---fin modal 3--->
 
 
-            <!---modal 8--->
-            <div x-show="showModal8"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal8 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 8
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[7]->bateria }}%<br>
-                        Desgaste: {{ $sensores[7]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[7]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal8 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
 
-            <!---modal 9--->
-            <div x-show="showModal9"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal9 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 13
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[12]->bateria }}%<br>
-                        Desgaste: {{ $sensores[12]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[12]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal9 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
-
-            <!---modal 10--->
+            <!---modal 4--->
             <div x-show="showModal10"
                 class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal10 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 2
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[1]->bateria }}%<br>
-                        Desgaste: {{ $sensores[1]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[1]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal10 = false">
-                        Cerrar
-                    </button>
+                <div class="bg-white rounded-lg w-full max-w-4xl mt-8 max-h-[80vh] overflow-y-auto dark:bg-gray-800"
+                    @click.away="showModal10 = false">
+
+                    <!-- Header -->
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <div class="flex items-center gap-4">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                                {{ $sensores[1]->nombre }}
+                            </h2>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                    @if($sensores[1]->desgaste < 20) bg-blue-100 text-blue-800 
+                    @elseif($sensores[1]->desgaste < 40) bg-orange-100 text-orange-800
+                    @else bg-red-100 text-red-800 @endif">
+                                @if($sensores[1]->desgaste < 20) Óptimo
+                                @elseif($sensores[1]->desgaste < 40) Aceptable
+                                @else Crítico @endif
+                            </span>
+                        </div>
+                        <button @click="showModal10 = false" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Métricas -->
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                            <!-- Temperatura -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Temperatura</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[1]->temperatura }}°C
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">
+                                    <span class="text-blue-600">Óptimo: 60-90°C</span> |
+                                    <span class="text-red-600">Crítico: >90°C</span>
+                                </div>
+                            </div>
+
+                            <!-- Desgaste -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Desgaste</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[1]->desgaste }}%
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">Límite: 50%</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full @if($sensores[1]->desgaste < 20) bg-blue-500 @elseif($sensores[1]->desgaste < 40) bg-orange-500 @else bg-red-500 @endif"
+                                        style="width: {{ $sensores[1]->desgaste }}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Batería -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Batería</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                                    {{ $sensores[1]->bateria }}%
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full"
+                                        style="width: {{ $sensores[1]->bateria }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Temperatura -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Temperatura
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoTemperaturaSensor2" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Desgaste -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Desgaste
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoDesgasteSensor2" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-6 pb-6">
+                        <button class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            @click="showModal10 = false">
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
+            <!---fin modal 4--->
 
-            <!---modal 11--->
-            <div x-show="showModal11"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal11 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 7
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[6]->bateria }}%<br>
-                        Desgaste: {{ $sensores[6]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[6]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal11 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
 
-            <!---modal 12--->
-            <div x-show="showModal12"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal12 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 12
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[11]->bateria }}%<br>
-                        Desgaste: {{ $sensores[11]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[11]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal12 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
 
-            <!---modal 13--->
+
+            <!---modal 5--->
             <div x-show="showModal13"
                 class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal13 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 1
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[0]->bateria }}%<br>
-                        Desgaste: {{ $sensores[0]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[0]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal13 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
+                <div class="bg-white rounded-lg w-full max-w-4xl mt-8 max-h-[80vh] overflow-y-auto dark:bg-gray-800"
+                    @click.away="showModal13 = false">
 
-            <!---modal 14--->
-            <div x-show="showModal14"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal14 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 6
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[5]->bateria }}%<br>
-                        Desgaste: {{ $sensores[5]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[5]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal14 = false">
-                        Cerrar
-                    </button>
-                </div>
-            </div>
+                    <!-- Header -->
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <div class="flex items-center gap-4">
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white">
+                                {{ $sensores[0]->nombre }}
+                            </h2>
+                            <span class="px-3 py-1 rounded-full text-sm font-medium
+                    @if($sensores[0]->desgaste < 20) bg-blue-100 text-blue-800 
+                    @elseif($sensores[0]->desgaste < 40) bg-orange-100 text-orange-800
+                    @else bg-red-100 text-red-800 @endif">
+                                @if($sensores[0]->desgaste < 20) Óptimo
+                                @elseif($sensores[0]->desgaste < 40) Aceptable
+                                @else Crítico @endif
+                            </span>
+                        </div>
+                        <button @click="showModal13 = false" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
 
-            <!---modal 15--->
-            <div x-show="showModal15"
-                class="fixed inset-0 z-[999999] flex items-center justify-center bg-black bg-opacity-50">
-                <div class="bg-white rounded-lg p-6 w-full max-w-md dark:bg-gray-800" @click.away="showModal15 = false">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">
-                        Sensor 11
-                    </h2>
-                    <p class="text-gray-600 dark:text-gray-300">
-                        Batería: {{ $sensores[10]->bateria }}%<br>
-                        Desgaste: {{ $sensores[10]->desgaste }}%<br>
-                        Temperatura: {{ $sensores[10]->temperatura }}°C
-                    </p>
-                    <button class="mt-4 px-4 py-2 bg-brand-500 text-white rounded hover:bg-brand-600"
-                        @click="showModal15 = false">
-                        Cerrar
-                    </button>
+                    <!-- Métricas -->
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+                            <!-- Temperatura -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Temperatura</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[0]->temperatura }}°C
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">
+                                    <span class="text-blue-600">Óptimo: 60-90°C</span> |
+                                    <span class="text-red-600">Crítico: >90°C</span>
+                                </div>
+                            </div>
+
+                            <!-- Desgaste -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Desgaste</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                                    {{ $sensores[0]->desgaste }}%
+                                </div>
+                                <div class="text-xs text-gray-500 mb-2">Límite: 50%</div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full @if($sensores[0]->desgaste < 20) bg-blue-500 @elseif($sensores[0]->desgaste < 40) bg-orange-500 @else bg-red-500 @endif"
+                                        style="width: {{ $sensores[0]->desgaste }}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Batería -->
+                            <div class="bg-gray-50 rounded-lg p-4 dark:bg-gray-700">
+                                <h3 class="text-sm text-gray-500 dark:text-gray-400 mb-1">Batería</h3>
+                                <div class="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+                                    {{ $sensores[0]->bateria }}%
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full"
+                                        style="width: {{ $sensores[0]->bateria }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Temperatura -->
+                        <div class="mb-8">
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Temperatura
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoTemperaturaSensor1" height="200"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Gráfico Histórico de Desgaste -->
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                                    </path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Histórico de Desgaste
+                                </h3>
+                            </div>
+                            <div class="bg-white rounded-lg p-4 border">
+                                <canvas id="graficoDesgasteSensor1" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="px-6 pb-6">
+                        <button class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            @click="showModal13 = false">
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             </div>
+            <!---fin modal 5--->
+
 
             <!----optimo-aceptable-critico-->
             <div class="col-span-12 mt-4">
@@ -502,3 +814,800 @@
         </div>
     </div>
 </div>
+
+
+
+
+<!-- JavaScript OPTIMIZADO - Sin mensajes repetidos -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM cargado, iniciando script...');
+
+        // Verificar si los datos históricos existen
+        try {
+            @if(isset($datosHistoricos) && !empty($datosHistoricos))
+                    // Datos históricos del controlador
+                    const datosHistoricos = {!! json_encode($datosHistoricos) !!};
+                    console.log('Datos históricos cargados:', datosHistoricos);
+
+                    /* ====================================================================
+                       INICIO MODAL 1 - SENSOR [4] (quinta posición) - CANVAS ID 5
+                       ==================================================================== */
+
+                    const sensorId1 = {{ $sensores[4]->id }};
+                    console.log('ID del sensor modal 1:', sensorId1);
+
+                    function crearGraficoTemperaturaSensor5() {
+                        const ctx = document.getElementById('graficoTemperaturaSensor5');
+                        if (!ctx) {
+                            console.error('Canvas de temperatura NO encontrado modal 1');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId1];
+                        if (!datos || !datos.temperaturas || datos.temperaturas.length === 0) {
+                            console.error('No hay datos de temperatura válidos modal 1');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de temperatura modal 1 con', datos.temperaturas.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Temperatura (°C)',
+                                    data: datos.temperaturas,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: false,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    function crearGraficoDesgasteSensor5() {
+                        const ctx = document.getElementById('graficoDesgasteSensor5');
+                        if (!ctx) {
+                            console.error('Canvas de desgaste NO encontrado modal 1');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId1];
+                        if (!datos || !datos.desgastes || datos.desgastes.length === 0) {
+                            console.error('No hay datos de desgaste válidos modal 1');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de desgaste modal 1 con', datos.desgastes.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Desgaste (%)',
+                                    data: datos.desgastes,
+                                    borderColor: '#ef4444',
+                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        max: 50,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Observer MEJORADO para modal 1
+                    const observer1 = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                const modal = document.querySelector('[x-show="showModal1"]');
+
+                                // Solo crear gráficos si está visible y no se han creado
+                                if (modal && modal.style.display !== 'none' && !modal.classList.contains('graficos1-creados')) {
+                                    console.log('Modal 1 abierto - Creando gráficos...');
+                                    modal.classList.add('graficos1-creados');
+                                    setTimeout(() => {
+                                        crearGraficoTemperaturaSensor5();
+                                        crearGraficoDesgasteSensor5();
+                                    }, 300);
+                                }
+
+                                // Limpiar marca cuando se cierra pero SIN interferir
+                                if (modal && modal.style.display === 'none' && modal.classList.contains('graficos1-creados')) {
+                                    modal.classList.remove('graficos1-creados');
+                                }
+                            }
+                        });
+                    });
+
+                    const modalElement1 = document.querySelector('[x-show="showModal1"]');
+                    if (modalElement1) {
+                        observer1.observe(modalElement1, { attributes: true });
+                    }
+
+                    /* ====================================================================
+                       FIN MODAL 1
+                       ==================================================================== */
+
+                    /* ====================================================================
+                       INICIO MODAL 2 - SENSOR [3] (cuarta posición) - CANVAS ID 4
+                       ==================================================================== */
+
+                    const sensorId2 = {{ $sensores[3]->id }};
+                    console.log('ID del sensor modal 2:', sensorId2);
+
+                    function crearGraficoTemperaturaSensor4() {
+                        const ctx = document.getElementById('graficoTemperaturaSensor4');
+                        if (!ctx) {
+                            console.error('Canvas de temperatura NO encontrado modal 2');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId2];
+                        if (!datos || !datos.temperaturas || datos.temperaturas.length === 0) {
+                            console.error('No hay datos de temperatura válidos modal 2');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de temperatura modal 2 con', datos.temperaturas.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Temperatura (°C)',
+                                    data: datos.temperaturas,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: false,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    function crearGraficoDesgasteSensor4() {
+                        const ctx = document.getElementById('graficoDesgasteSensor4');
+                        if (!ctx) {
+                            console.error('Canvas de desgaste NO encontrado modal 2');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId2];
+                        if (!datos || !datos.desgastes || datos.desgastes.length === 0) {
+                            console.error('No hay datos de desgaste válidos modal 2');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de desgaste modal 2 con', datos.desgastes.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Desgaste (%)',
+                                    data: datos.desgastes,
+                                    borderColor: '#ef4444',
+                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        max: 50,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Observer MEJORADO para modal 2
+                    const observer2 = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                const modal = document.querySelector('[x-show="showModal2"]');
+
+                                // Solo crear gráficos si está visible y no se han creado
+                                if (modal && modal.style.display !== 'none' && !modal.classList.contains('graficos2-creados')) {
+                                    console.log('Modal 2 abierto - Creando gráficos...');
+                                    modal.classList.add('graficos2-creados');
+                                    setTimeout(() => {
+                                        crearGraficoTemperaturaSensor4();
+                                        crearGraficoDesgasteSensor4();
+                                    }, 300);
+                                }
+
+                                // Limpiar marca cuando se cierra pero SIN interferir
+                                if (modal && modal.style.display === 'none' && modal.classList.contains('graficos2-creados')) {
+                                    modal.classList.remove('graficos2-creados');
+                                }
+                            }
+                        });
+                    });
+
+                    const modalElement2 = document.querySelector('[x-show="showModal2"]');
+                    if (modalElement2) {
+                        observer2.observe(modalElement2, { attributes: true });
+                    }
+
+                    /* ====================================================================
+                       FIN MODAL 2
+                       ==================================================================== */
+
+
+                    /* ====================================================================
+                    INICIO MODAL 3 - SENSOR [2] (tercera posición) - CANVAS ID 3
+                    ==================================================================== */
+
+                    const sensorId3 = {{ $sensores[2]->id }};
+                    console.log('ID del sensor modal 7:', sensorId3);
+
+                    function crearGraficoTemperaturaSensor3() {
+                        const ctx = document.getElementById('graficoTemperaturaSensor3');
+                        if (!ctx) {
+                            console.error('Canvas de temperatura NO encontrado modal 7');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId3];
+                        if (!datos || !datos.temperaturas || datos.temperaturas.length === 0) {
+                            console.error('No hay datos de temperatura válidos modal 7');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de temperatura modal 7 con', datos.temperaturas.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Temperatura (°C)',
+                                    data: datos.temperaturas,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: false,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    function crearGraficoDesgasteSensor3() {
+                        const ctx = document.getElementById('graficoDesgasteSensor3');
+                        if (!ctx) {
+                            console.error('Canvas de desgaste NO encontrado modal 7');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId3];
+                        if (!datos || !datos.desgastes || datos.desgastes.length === 0) {
+                            console.error('No hay datos de desgaste válidos modal 7');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de desgaste modal 7 con', datos.desgastes.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Desgaste (%)',
+                                    data: datos.desgastes,
+                                    borderColor: '#ef4444',
+                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        max: 50,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Observer MEJORADO para modal 7
+                    const observer3 = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                const modal = document.querySelector('[x-show="showModal7"]');
+
+                                // Solo crear gráficos si está visible y no se han creado
+                                if (modal && modal.style.display !== 'none' && !modal.classList.contains('graficos3-creados')) {
+                                    console.log('Modal 7 abierto - Creando gráficos...');
+                                    modal.classList.add('graficos3-creados');
+                                    setTimeout(() => {
+                                        crearGraficoTemperaturaSensor3();
+                                        crearGraficoDesgasteSensor3();
+                                    }, 300);
+                                }
+
+                                // Limpiar marca cuando se cierra pero SIN interferir
+                                if (modal && modal.style.display === 'none' && modal.classList.contains('graficos3-creados')) {
+                                    modal.classList.remove('graficos3-creados');
+                                }
+                            }
+                        });
+                    });
+
+                    const modalElement3 = document.querySelector('[x-show="showModal7"]');
+                    if (modalElement3) {
+                        observer3.observe(modalElement3, { attributes: true });
+                    }
+
+                    /* ====================================================================
+                       FIN MODAL 3
+                       ==================================================================== */
+
+
+
+                    /* ====================================================================
+                 INICIO MODAL 4 - SENSOR [1] (tercera posición) - CANVAS ID 2
+                 ==================================================================== */
+
+                    const sensorId4 = {{ $sensores[1]->id }};
+                    console.log('ID del sensor modal 10:', sensorId4);
+
+                    function crearGraficoTemperaturaSensor2() {
+                        const ctx = document.getElementById('graficoTemperaturaSensor2');
+                        if (!ctx) {
+                            console.error('Canvas de temperatura NO encontrado modal 10');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId4];
+                        if (!datos || !datos.temperaturas || datos.temperaturas.length === 0) {
+                            console.error('No hay datos de temperatura válidos modal 10');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de temperatura modal 10 con', datos.temperaturas.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Temperatura (°C)',
+                                    data: datos.temperaturas,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: false,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    function crearGraficoDesgasteSensor2() {
+                        const ctx = document.getElementById('graficoDesgasteSensor2');
+                        if (!ctx) {
+                            console.error('Canvas de desgaste NO encontrado modal 10');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId4];
+                        if (!datos || !datos.desgastes || datos.desgastes.length === 0) {
+                            console.error('No hay datos de desgaste válidos modal 10');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de desgaste modal 10 con', datos.desgastes.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Desgaste (%)',
+                                    data: datos.desgastes,
+                                    borderColor: '#ef4444',
+                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        max: 50,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Observer MEJORADO para modal 7
+                    const observer4 = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                const modal = document.querySelector('[x-show="showModal10"]');
+
+                                // Solo crear gráficos si está visible y no se han creado
+                                if (modal && modal.style.display !== 'none' && !modal.classList.contains('graficos4-creados')) {
+                                    console.log('Modal 10 abierto - Creando gráficos...');
+                                    modal.classList.add('graficos4-creados');
+                                    setTimeout(() => {
+                                        crearGraficoTemperaturaSensor2();
+                                        crearGraficoDesgasteSensor2();
+                                    }, 300);
+                                }
+
+                                // Limpiar marca cuando se cierra pero SIN interferir
+                                if (modal && modal.style.display === 'none' && modal.classList.contains('graficos4-creados')) {
+                                    modal.classList.remove('graficos4-creados');
+                                }
+                            }
+                        });
+                    });
+
+                    const modalElement4 = document.querySelector('[x-show="showModal10"]');
+                    if (modalElement4) {
+                        observer4.observe(modalElement4, { attributes: true });
+                    }
+
+                    /* ====================================================================
+                       FIN MODAL 4
+                       ==================================================================== */
+
+
+
+
+
+
+                    /* ====================================================================
+                 INICIO MODAL 5 - SENSOR [0] (tercera posición) - CANVAS ID 2
+                 ==================================================================== */
+
+                    const sensorId5 = {{ $sensores[0]->id }};
+                    console.log('ID del sensor modal 13:', sensorId5);
+
+                    function crearGraficoTemperaturaSensor1() {
+                        const ctx = document.getElementById('graficoTemperaturaSensor1');
+                        if (!ctx) {
+                            console.error('Canvas de temperatura NO encontrado modal 13');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId5];
+                        if (!datos || !datos.temperaturas || datos.temperaturas.length === 0) {
+                            console.error('No hay datos de temperatura válidos modal 13');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de temperatura modal 13 con', datos.temperaturas.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Temperatura (°C)',
+                                    data: datos.temperaturas,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: false,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    function crearGraficoDesgasteSensor1() {
+                        const ctx = document.getElementById('graficoDesgasteSensor1');
+                        if (!ctx) {
+                            console.error('Canvas de desgaste NO encontrado modal 13');
+                            return;
+                        }
+
+                        const datos = datosHistoricos[sensorId5];
+                        if (!datos || !datos.desgastes || datos.desgastes.length === 0) {
+                            console.error('No hay datos de desgaste válidos modal 13');
+                            return;
+                        }
+
+                        console.log('Creando gráfico de desgaste modal 13 con', datos.desgastes.length, 'puntos');
+
+                        new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: datos.etiquetas,
+                                datasets: [{
+                                    label: 'Desgaste (%)',
+                                    data: datos.desgastes,
+                                    borderColor: '#ef4444',
+                                    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                    fill: true,
+                                    tension: 0.4,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        display: true,
+                                        position: 'top'
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        max: 50,
+                                        grid: {
+                                            color: 'rgba(0, 0, 0, 0.1)'
+                                        }
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Observer MEJORADO para modal 7
+                    const observer5 = new MutationObserver(function (mutations) {
+                        mutations.forEach(function (mutation) {
+                            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                                const modal = document.querySelector('[x-show="showModal13"]');
+
+                                // Solo crear gráficos si está visible y no se han creado
+                                if (modal && modal.style.display !== 'none' && !modal.classList.contains('graficos5-creados')) {
+                                    console.log('Modal 13 abierto - Creando gráficos...');
+                                    modal.classList.add('graficos5-creados');
+                                    setTimeout(() => {
+                                        crearGraficoTemperaturaSensor1();
+                                        crearGraficoDesgasteSensor1();
+                                    }, 300);
+                                }
+
+                                // Limpiar marca cuando se cierra pero SIN interferir
+                                if (modal && modal.style.display === 'none' && modal.classList.contains('graficos5-creados')) {
+                                    modal.classList.remove('graficos5-creados');
+                                }
+                            }
+                        });
+                    });
+
+                    const modalElement5 = document.querySelector('[x-show="showModal13"]');
+                    if (modalElement5) {
+                        observer5.observe(modalElement5, { attributes: true });
+                    }
+
+                    /* ====================================================================
+                       FIN MODAL 5
+                       ==================================================================== */
+
+            @else
+                console.error('No hay datos históricos disponibles en el servidor');
+            @endif
+        } catch (error) {
+            console.error('Error crítico al cargar datos históricos:', error);
+        }
+    });
+</script>

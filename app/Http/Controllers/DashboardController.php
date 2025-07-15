@@ -21,13 +21,17 @@ class DashboardController extends Controller
         $datosGrafico = $this->obtenerDatosGraficoDesgaste();
         $datosGraficoTemperatura = $this->obtenerDatosGraficoTemperatura();
 
+        // NUEVO: Obtener datos históricos para modales
+    $datosHistoricos = $this->obtenerDatosHistoricosPorSensor();
+
         return view('dashboard', compact(
             'sensores', 
             'sensoresActivos', 
             'sensoresCriticos', 
             'temperaturaPromedio',
             'datosGrafico',
-            'datosGraficoTemperatura'
+            'datosGraficoTemperatura',
+            'datosHistoricos'
         ));
     }
 
@@ -138,4 +142,43 @@ class DashboardController extends Controller
             return '#dc2626'; // Rojo - Crítico
         }
     }
+
+
+
+
+    // NUEVO MÉTODO: Obtener datos históricos por sensor
+private function obtenerDatosHistoricosPorSensor()
+{
+    $sensores = Sensor::all();
+    $historicos = [];
+
+    foreach ($sensores as $sensor) {
+        // Obtener últimos 20 registros históricos del sensor
+        $historialSensor = HistorialSensor::where('sensor_id', $sensor->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(20)
+            ->get()
+            ->reverse(); // Para mostrar cronológicamente
+
+        // Preparar datos para gráficos
+        $temperaturas = [];
+        $desgastes = [];
+        $etiquetas = [];
+
+        foreach ($historialSensor as $index => $registro) {
+            $temperaturas[] = (float) $registro->temperatura;
+            $desgastes[] = (float) $registro->desgaste;
+            // Crear etiquetas de tiempo (puedes ajustar según tus necesidades)
+            $etiquetas[] = $registro->created_at->format('H:i');
+        }
+
+        $historicos[$sensor->id] = [
+            'temperaturas' => $temperaturas,
+            'desgastes' => $desgastes,
+            'etiquetas' => $etiquetas
+        ];
+    }
+
+    return $historicos;
+}
 }

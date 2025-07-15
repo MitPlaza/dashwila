@@ -42,7 +42,7 @@
       console.log('sidebarToggle cambió a:', value);
       console.trace('sidebarToggle cambio');
     });
-  " :class=\"{'dark bg-gray-900': darkMode===true}\">
+  ">
   <!-- Page Wrapper -->
   <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->

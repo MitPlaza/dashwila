@@ -10,7 +10,10 @@
                     :temperaturaPromedio="$temperaturaPromedio" />
             </div>
             <div class="col-span-8">
-                <x-model-viewer :sensores="$sensores" />
+                <x-model-viewer 
+    :sensores="$sensores" 
+    :datos-historicos="$datosHistoricos" 
+/>
             </div>
 
         </div>
@@ -62,17 +65,17 @@
                                     </h3>
                                     <span class="inline-block w-3 h-3 rounded-full"
                                         style="
-                                                                                                                                                                                                                                                                                                                        background-color:
-                                                                                                                                                                                                                                                                                                                        @if($sensor->estado === 'desactivado')
-                                                                                                                                                                                                                                                                                                                             #9ca3af
-                                                                                                                                                                                                                                                                                                                        @elseif($sensor->desgaste < 20)
-                                                                                                                                                                                                                                                                                                                            #00a8e8   /* Óptimo */
-                                                                                                                                                                                                                                                                                                                        @elseif($sensor->desgaste < 40)
-                                                                                                                                                                                                                                                                                                                            #f59e0b   /* Aceptable */
-                                                                                                                                                                                                                                                                                                                         @else
-                                                                                                                                                                                                                                                                                                                             #dc2626   /* Crítico */
-                                                                                                                                                                                                                                                                                                                        @endif
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ">
+                                     background-color:
+                                     @if($sensor->estado === 'desactivado')
+                                         #9ca3af
+                                     @elseif($sensor->desgaste < 20)
+                                         #00a8e8   /* Óptimo */
+                                     @elseif($sensor->desgaste < 40)
+                                          #f59e0b   /* Aceptable */
+                                        @else
+                                         #dc2626   /* Crítico */
+                                    @endif
+                                ">
                                     </span>
                                 </div>
 
@@ -82,15 +85,15 @@
                                     <div></div>
                                     <p class="text-xl font-bold"
                                         style="color: 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }}">
+                                    {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }}">
                                         {{ $desgaste }}%
                                     </p>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
                                     <div class="h-2.5 rounded-full"
                                         style="
-                                                                                                                                                                                                                                                                                                                                width: {{ $desgaste }}%;
-                                                                                                                                                                                                                                                                                                                                background-color: {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }};">
+                                    width: {{ $desgaste }}%;
+                                    background-color: {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }};">
                                     </div>
                                 </div>
 
@@ -107,9 +110,9 @@
                                         <p class="font-semibold">{{ $bateria }}%</p>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1 dark:bg-gray-700">
                                             <div class="h-2.5 rounded-full" style="
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            width: {{ $bateria }}%;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            background-color: 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $bateria < 30
+                                                             width: {{ $bateria }}%;
+                                                             background-color: 
+                                                                   {{ $bateria < 30
                     ? '#dc2626'
                     : ($bateria < 60
                         ? '#f59e0b'
@@ -147,17 +150,17 @@
                                     </h3>
                                     <span class="inline-block w-3 h-3 rounded-full"
                                         style="
-                                                                                                                                                                                                                                                                                                                                                                        background-color:
-                                                                                                                                                                                                                                                                                                                                                                                @if($sensor->estado === 'desactivado')
-                                                                                                                                                                                                                                                                                                                                                                                    #9ca3af
-                                                                                                                                                                                                                                                                                                                                                                                @elseif($sensor->desgaste < 20)
-                                                                                                                                                                                                                                                                                                                                                                                    #00a8e8   /* Óptimo */
-                                                                                                                                                                                                                                                                                                                                                                                @elseif($sensor->desgaste < 40)
-                                                                                                                                                                                                                                                                                                                                                                                    #f59e0b   /* Aceptable */
-                                                                                                                                                                                                                                                                                                                                                                                 @else
-                                                                                                                                                                                                                                                                                                                                                                                     #dc2626   /* Crítico */
-                                                                                                                                                                                                                                                                                                                                                                                 @endif
-                                                                                                                                                                                                                                                                                                                                                                            ">
+                                    background-color:
+                                            @if($sensor->estado === 'desactivado')
+                                                #9ca3af
+                                            @elseif($sensor->desgaste < 20)
+                                                 #00a8e8   /* Óptimo */
+                                             @elseif($sensor->desgaste < 40)
+                                                 #f59e0b   /* Aceptable */
+                                                @else
+                                                    #dc2626   /* Crítico */
+                                                @endif
+                                        ">
                                     </span>
                                 </div>
 
@@ -167,15 +170,15 @@
                                     <div></div>
                                     <p class="text-xl font-bold"
                                         style="color: 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }}">
+                                        {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }}">
                                         {{ $desgaste }}%
                                     </p>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
                                     <div class="h-2.5 rounded-full"
                                         style="
-                                                                                                                                                                                                                                                                                                                                                    width: {{ $desgaste }}%;
-                                                                                                                                                                                                                                                                                                                                                    background-color: {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }};">
+                                    width: {{ $desgaste }}%;
+                                    background-color: {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }};">
                                     </div>
                                 </div>
 
@@ -192,9 +195,9 @@
                                         <p class="font-semibold">{{ $bateria }}%</p>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1 dark:bg-gray-700">
                                             <div class="h-2.5 rounded-full" style="
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                width: {{ $bateria }}%;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                background-color: 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $bateria < 30
+                                                                width: {{ $bateria }}%;
+                                                                background-color: 
+                                                                    {{ $bateria < 30
                     ? '#dc2626'
                     : ($bateria < 60
                         ? '#f59e0b'
@@ -233,17 +236,17 @@
                                     </h3>
                                     <span class="inline-block w-3 h-3 rounded-full"
                                         style="
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       background-color:
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @if($sensor->estado === 'desactivado')
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  #9ca3af
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @elseif($sensor->desgaste < 20)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                #00a8e8   /* Óptimo */
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @elseif($sensor->desgaste < 40)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                #f59e0b   /* Aceptable */
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @else
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                #dc2626   /* Crítico */
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @endif
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ">
+                                        background-color:
+                                                @if($sensor->estado === 'desactivado')
+                                                     #9ca3af
+                                            @elseif($sensor->desgaste < 20)
+                                                  #00a8e8   /* Óptimo */
+                                            @elseif($sensor->desgaste < 40)
+                                                  #f59e0b   /* Aceptable */
+                                             @else
+                                                 #dc2626   /* Crítico */
+                                            @endif
+                                            ">
                                     </span>
                                 </div>
 
@@ -253,15 +256,15 @@
                                     <div></div>
                                     <p class="text-xl font-bold"
                                         style="color: 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }}">
+                                        {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }}">
                                         {{ $desgaste }}%
                                     </p>
                                 </div>
                                 <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4 dark:bg-gray-700">
                                     <div class="h-2.5 rounded-full"
                                         style="
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        width: {{ $desgaste }}%;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        background-color: {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }};">
+                                        width: {{ $desgaste }}%;
+                                        background-color: {{ $desgaste >= 40 ? '#dc2626' : '#00a8e8' }};">
                                     </div>
                                 </div>
 
@@ -278,9 +281,9 @@
                                         <p class="font-semibold">{{ $bateria }}%</p>
                                         <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1 dark:bg-gray-700">
                                             <div class="h-2.5 rounded-full" style="
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                width: {{ $bateria }}%;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                background-color: 
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $bateria < 30
+                                                                            width: {{ $bateria }}%;
+                                                                            background-color: 
+                                                                                {{ $bateria < 30
                     ? '#dc2626'
                     : ($bateria < 60
                         ? '#f59e0b'
