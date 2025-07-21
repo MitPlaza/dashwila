@@ -72,8 +72,30 @@ class SensorController extends Controller
         'temperatura' => $sensor->temperatura,
     ]);
 
-    // 2. Actualiza el sensor con los nuevos datos
-    $sensor->update($request->all());
+    // 2. Calcular automáticamente la condición - DESGASTE ES PRIORITARIO
+    $nuevaTemperatura = $request->temperatura;
+    $nuevoDesgaste = $request->desgaste;
+    
+    // Lógica basada en DESGASTE como prioridad
+    if ($nuevoDesgaste > 40) {
+        $condicion = 'critico';  // Si desgaste > 40%, siempre crítico
+    }
+    elseif ($nuevoDesgaste >= 20) {
+        $condicion = 'aceptable'; // Si desgaste entre 20-40%, aceptable
+    }
+    else {
+        $condicion = 'optimo';    // Si desgaste < 20%, óptimo
+    }
+
+    // 3. Actualizar el sensor con los nuevos datos Y la condición calculada
+    $sensor->update([
+        'nombre' => $request->nombre,
+        'bateria' => $request->bateria,
+        'desgaste' => $nuevoDesgaste,
+        'temperatura' => $nuevaTemperatura,
+        'estado' => $request->estado,
+        'condicion' => $condicion  // ← Calculado automáticamente basado en desgaste
+    ]);
 
     return redirect()->route('sensores.index')->with('success', 'Sensor actualizado correctamente.');
 }
