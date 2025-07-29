@@ -56,8 +56,8 @@
                                 $bateria = $sensor->estado === 'desactivado' ? 0 : $sensor->bateria;
                             @endphp
 
-                            <div class="border rounded-lg p-4 bg-white shadow dark:bg-gray-800 {{ $sensor->estado === 'desactivado' ? 'opacity-50' : '' }}"
-                                style="border-color: @if($sensor->desgaste > 40) #dc2626 @else #a6b8c1  @endif ">
+                           <div class="border rounded-lg p-4 bg-white shadow dark:bg-gray-800 {{ $sensor->estado === 'desactivado' ? 'opacity-50' : '' }} {{ $sensor->desgaste > 40 ? 'sensor-critico' : '' }}"
+     style="border-color: @if($sensor->desgaste > 40) #dc2626 @else #a6b8c1 @endif">
 
                                 <div class="flex items-center justify-between mb-2">
                                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
@@ -68,10 +68,8 @@
                                      background-color:
                                      @if($sensor->estado === 'desactivado')
                                          #9ca3af
-                                     @elseif($sensor->desgaste < 20)
-                                         #00a8e8   /* Óptimo */
                                      @elseif($sensor->desgaste < 40)
-                                          #f59e0b   /* Aceptable */
+                                         #00a8e8   /* Óptimo */
                                         @else
                                          #dc2626   /* Crítico */
                                     @endif
@@ -141,8 +139,8 @@
                                 $bateria = $sensor->estado === 'desactivado' ? 0 : $sensor->bateria;
                             @endphp
 
-                            <div class="border rounded-lg p-4 bg-white shadow dark:bg-gray-800 {{ $sensor->estado === 'desactivado' ? 'opacity-50' : '' }}"
-                                style="border-color: @if($sensor->desgaste > 40) #dc2626 @else #a6b8c1  @endif ">
+                            <div class="border rounded-lg p-4 bg-white shadow dark:bg-gray-800 {{ $sensor->estado === 'desactivado' ? 'opacity-50' : '' }} {{ $sensor->desgaste > 40 ? 'sensor-critico' : '' }}"
+     style="border-color: @if($sensor->desgaste > 40) #dc2626 @else #a6b8c1 @endif">
 
                                 <div class=" flex items-center justify-between mb-2">
                                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
@@ -153,10 +151,8 @@
                                     background-color:
                                             @if($sensor->estado === 'desactivado')
                                                 #9ca3af
-                                            @elseif($sensor->desgaste < 20)
+                                            @elseif($sensor->desgaste < 40)
                                                  #00a8e8   /* Óptimo */
-                                             @elseif($sensor->desgaste < 40)
-                                                 #f59e0b   /* Aceptable */
                                                 @else
                                                     #dc2626   /* Crítico */
                                                 @endif
@@ -227,8 +223,8 @@
                                 $bateria = $sensor->estado === 'desactivado' ? 0 : $sensor->bateria;
                             @endphp
 
-                            <div class="border rounded-lg p-4 bg-white shadow dark:bg-gray-800 {{ $sensor->estado === 'desactivado' ? 'opacity-50' : '' }}"
-                                style="border-color: @if($sensor->desgaste > 40) #dc2626 @else #a6b8c1  @endif">
+                           <div class="border rounded-lg p-4 bg-white shadow dark:bg-gray-800 {{ $sensor->estado === 'desactivado' ? 'opacity-50' : '' }} {{ $sensor->desgaste > 40 ? 'sensor-critico' : '' }}"
+     style="border-color: @if($sensor->desgaste > 40) #dc2626 @else #a6b8c1 @endif">
 
                                 <div class=" flex items-center justify-between mb-2">
                                     <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
@@ -239,10 +235,8 @@
                                         background-color:
                                                 @if($sensor->estado === 'desactivado')
                                                      #9ca3af
-                                            @elseif($sensor->desgaste < 20)
-                                                  #00a8e8   /* Óptimo */
                                             @elseif($sensor->desgaste < 40)
-                                                  #f59e0b   /* Aceptable */
+                                                  #00a8e8   /* Óptimo */
                                              @else
                                                  #dc2626   /* Crítico */
                                             @endif
@@ -302,7 +296,29 @@
     </div>
 
 
-  
+<style>
+.sensor-critico {
+    animation: borderPulse 2s infinite ease-in-out;
+}
+
+@keyframes borderPulse {
+    0% {
+        border-color: #dc2626;
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+        opacity: 1;
+    }
+    50% {
+        border-color: #dc2626;
+        box-shadow: 0 0 0 10px rgba(220, 38, 38, 0);
+        opacity: 0.5;  /* Igual que opacity-50 de Tailwind */
+    }
+    100% {
+        border-color: #dc2626;
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+        opacity: 1;
+    }
+}
+</style>
 <!-- Chart.js - solo una vez -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 

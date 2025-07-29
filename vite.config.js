@@ -12,4 +12,10 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        hmr: {
+            overlay: false, // 🔇 oculta el overlay de errores en el navegador
+        },
+    },
 });
+

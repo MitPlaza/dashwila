@@ -10,7 +10,7 @@
   </title>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <!-- Estilos personalizados si los tienes -->
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @vite(['resources/css/app.css', 'resources/css/style.css', 'resources/js/app.js'])
 
 
 </head>
