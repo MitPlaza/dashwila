@@ -41,6 +41,15 @@ Route::get('/dashboard/form-registro', function () {
         return view('dashboard.formulario');
     })->name('form.registro');
 
+Route::get('/dashboard/index', function() {
+    if (Auth::user()->rol !== 'admin') {
+        abort(403);
+    }
+    return app(UserController::class)->index();
+})->name('dashboard.index');
+
+Route::delete('/dashboard/index/{user}', [UserController::class, 'destroy'])->name('dashboard.destroy');
+
 
 
 Route::post('/dashboard/users/store', [UserController::class, 'store'])->name('dashboard.user.store');

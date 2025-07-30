@@ -13,6 +13,14 @@ class UserController extends Controller
     /**
      * Almacena un nuevo usuario registrado por un administrador.
      */
+
+    public function index(){
+        $usuarios = User::all();
+
+        return view('dashboard.index', compact('usuarios'));
+    }
+
+
     public function store(Request $request)
     {
         // Validar los datos
@@ -33,4 +41,25 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Usuario registrado correctamente.');
         
     }
+
+    public function destroy(User $user)
+{
+    try {
+        // Verificar que no se elimine a sí mismo
+        if (auth()->id() === $user->id) {
+            return redirect()->route('dashboard.index')
+                ->with('error', 'No puedes eliminarte a ti mismo.');
+        }
+
+        // Eliminar el usuario
+        $user->delete();
+
+        return redirect()->route('dashboard.index')
+            ->with('success', 'Usuario eliminado correctamente.');
+
+    } catch (\Exception $e) {
+        return redirect()->route('dashboard.index')
+            ->with('error', 'Error al eliminar el usuario.');
+    }
+}
 }
