@@ -55,13 +55,6 @@
             </div>
 
 
-
-
-
-
-
-
-
             <div>
 
 
@@ -102,6 +95,19 @@
                             name="password_confirmation" required autocomplete="new-password" />
 
                         <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+                    </div>
+
+                    <!-- Rol -->
+                    <div class="mt-4">
+                        <x-input-label for="rol" :value="__('Rol')" />
+                        <select id="rol" name="rol"
+                            class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                            required>
+                            <option value="">Selecciona un rol</option>
+                            <option value="admin" {{ old('rol') == 'admin' ? 'selected' : '' }}>Administrador</option>
+                            <option value="cliente" {{ old('rol') == 'cliente' ? 'selected' : '' }}>Cliente</option>
+                        </select>
+                        <x-input-error :messages="$errors->get('rol')" class="mt-2" />
                     </div>
 
                     <div class="flex items-center justify-end mt-4">

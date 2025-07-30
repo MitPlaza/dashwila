@@ -22,25 +22,26 @@ class UserController extends Controller
 
 
     public function store(Request $request)
-    {
-        // Validar los datos
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+{
+    // Validar los datos
+    $validated = $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        'rol' => ['required', 'in:admin,cliente'], // Cambio: admin o cliente
+    ]);
 
-        // Crear el usuario
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-        ]);
+    // Crear el usuario
+    $user = User::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'password' => Hash::make($validated['password']),
+        'rol' => $validated['rol'],
+    ]);
 
-        // Puedes redirigir de vuelta con un mensaje de éxito
-        return redirect()->back()->with('success', 'Usuario registrado correctamente.');
-        
-    }
+    // Redirigir de vuelta con un mensaje de éxito
+    return redirect()->back()->with('success', 'Usuario registrado correctamente.');
+}
 
     public function destroy(User $user)
 {
